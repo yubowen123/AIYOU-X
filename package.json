@@ -1,0 +1,127 @@
+{
+  "name": "aiyou-desktop",
+  "version": "0.3.2",
+  "private": true,
+  "description": "AIYOU is a Codex Harness desktop workspace with native multi-provider multimodal model access.",
+  "author": "AIYOU",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist-electron/main/main.cjs",
+  "scripts": {
+    "dev": "concurrently -k \"vite\" \"wait-on http://127.0.0.1:5173 && cross-env VITE_DEV_SERVER_URL=http://127.0.0.1:5173 electron .\"",
+    "build:renderer": "vite build",
+    "build:electron": "tsup src/main/main.ts src/preload/preload.ts --format cjs --platform node --out-dir dist-electron --external electron --clean",
+    "build": "npm run typecheck && npm run build:renderer && npm run build:electron",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "verify": "npm run typecheck && npm run test && npm run build",
+    "smoke:runtime": "node scripts/smoke-agent-runtime.mjs",
+    "capture": "npm run build && cross-env AIYOU_CAPTURE_VIEW=main electron . --capture-ui artifacts/ui-main.png",
+    "capture:settings": "npm run build && cross-env AIYOU_CAPTURE_VIEW=settings electron . --capture-ui artifacts/ui-settings.png",
+    "capture:models": "npm run build && cross-env AIYOU_CAPTURE_VIEW=models electron . --capture-ui artifacts/ui-model-workbench.png",
+    "capture:streaming": "npm run build && cross-env AIYOU_CAPTURE_VIEW=streaming electron . --capture-ui artifacts/ui-streaming-chat.png",
+    "capture:defaults": "npm run build && cross-env AIYOU_CAPTURE_VIEW=defaults electron . --capture-ui artifacts/ui-default-models.png",
+    "capture:plugins": "npm run build && cross-env AIYOU_CAPTURE_VIEW=plugins electron . --capture-ui artifacts/ui-plugin-workspace.png",
+    "capture:skills": "npm run build && cross-env AIYOU_CAPTURE_VIEW=skills electron . --capture-ui artifacts/ui-skills-runtime-v0.3.2.png",
+    "dist:mac": "npm run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false ELECTRON_BUILDER_BINARIES_MIRROR=https://npmmirror.com/mirrors/electron-builder-binaries/ electron-builder --mac dmg zip --arm64 -c.electronDist=node_modules/electron/dist",
+    "dist:win": "npm run build && electron-builder --win nsis --x64"
+  },
+  "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-switch": "^1.2.6",
+    "@radix-ui/react-tabs": "^1.1.13",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.468.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tailwind-merge": "^3.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.18",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.1",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
+    "electron": "^39.2.6",
+    "electron-builder": "^26.0.12",
+    "jsdom": "^27.3.0",
+    "tailwindcss": "^4.1.18",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.7",
+    "vitest": "^4.0.16",
+    "wait-on": "^9.0.3"
+  },
+  "build": {
+    "appId": "cn.aiyou.desktop",
+    "productName": "AIYOU",
+    "asar": true,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**",
+      "dist-electron/**",
+      "package.json"
+    ],
+    "mac": {
+      "icon": "build/icon.icns",
+      "extraResources": [
+        {
+          "from": "vendor/codex-darwin-arm64/codex",
+          "to": "bin/codex"
+        },
+        {
+          "from": "THIRD_PARTY_NOTICES.md",
+          "to": "THIRD_PARTY_NOTICES.md"
+        }
+      ],
+      "category": "public.app-category.developer-tools",
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "artifactName": "AIYOU-${version}-${arch}.${ext}",
+      "hardenedRuntime": false,
+      "identity": "-"
+    },
+    "dmg": {
+      "title": "AIYOU ${version}",
+      "backgroundColor": "#f4f3ef",
+      "window": {
+        "width": 540,
+        "height": 380
+      },
+      "contents": [
+        {
+          "x": 145,
+          "y": 190,
+          "type": "file"
+        },
+        {
+          "x": 395,
+          "y": 190,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "win": {
+      "icon": "build/icon.png",
+      "target": "nsis",
+      "artifactName": "AIYOU-Setup-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}
