@@ -96,3 +96,11 @@ macOS 安装包构建前，需要将与目标架构匹配的 Codex CLI 可执行
 
 AIYOU 是独立产品，不是 OpenAI 官方应用。随 macOS 包分发的 Codex 运行时及其许可
 信息见 `THIRD_PARTY_NOTICES.md`。
+
+<!-- aiyou-contact:start -->
+## 联系作者 / Contact
+
+扫码添加作者微信，交流使用体验与项目合作。
+
+<img src="docs/assets/wechat-contact.jpg" width="280" alt="Glimmer · 光波的个人微信二维码">
+<!-- aiyou-contact:end -->
